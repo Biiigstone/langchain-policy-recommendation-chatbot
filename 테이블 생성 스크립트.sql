@@ -1,90 +1,104 @@
-INSERT INTO category_codes (code, name) VALUES
-(1, '일자리'),
-(2, '주거'),
-(3, '교육'),
-(4, '복지문화'),
-(5, '참여권리');
+CREATE DATABASE `toyprj4` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
 
-INSERT INTO education_level_codes (code, name) VALUES
-('0049001', '고졸 미만'),
-('0049002', '고교 재학'),
-('0049003', '고졸 예정'),
-('0049004', '고교 졸업'),
-('0049005', '대학 재학'),
-('0049006', '대졸 예정'),
-('0049007', '대학 졸업'),
-('0049008', '석·박사'),
-('0049009', '기타'),
-('0049010', '제한없음');
+CREATE TABLE `education_level_codes` (
+  `code` varchar(10) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  PRIMARY KEY (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-INSERT INTO job_status_codes (code, name) VALUES
-('0013002', '자영업자'),
-('0013003', '미취업자'),
-('0013004', '프리랜서'),
-('0013005', '일용근로자'),
-('0013006', '(예비)창업자'),
-('0013007', '단기근로자'),
-('0013008', '영농종사자'),
-('0013009', '기타'),
-('0013010', '제한없음');
 
-INSERT INTO keywords (code, name) VALUES
-(1, '대출'),
-(2, '보조금'),
-(3, '바우처'),
-(4, '금리혜택'),
-(5, '교육지원'),
-(6, '맞춤형상담서비스'),
-(7, '인턴'),
-(8, '벤처'),
-(9, '중소기업'),
-(10, '청년가장'),
-(11, '장기미취업청년'),
-(12, '공공임대주택'),
-(13, '신용회복'),
-(14, '육아'),
-(15, '출산'),
-(16, '해외진출'),
-(17, '주거지원');
+CREATE TABLE `job_status_codes` (
+  `code` varchar(10) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  PRIMARY KEY (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-INSERT INTO major_codes (code, name) VALUES
-('0011001', '인문계열'),
-('0011002', '사회계열'),
-('0011003', '상경계열'),
-('0011004', '이학계열'),
-('0011005', '공학계열'),
-('0011006', '예체능계열'),
-('0011007', '농산업계열'),
-('0011008', '기타'),
-('0011009', '제한없음');
 
-INSERT INTO specialization_codes (code, name) VALUES
-('0014001', '중소기업'),
-('0014002', '여성'),
-('0014003', '기초생활수급자'),
-('0014004', '한부모가정'),
-('0014005', '장애인'),
-('0014006', '농업인'),
-('0014007', '군인'),
-('0014008', '지역인재'),
-('0014009', '기타'),
-('0014010', '제한없음');
+CREATE TABLE `major_codes` (
+  `code` varchar(10) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  PRIMARY KEY (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-INSERT INTO subcategory_codes (code, name) VALUES
-(1, '취업'),
-(2, '재직자'),
-(3, '창업'),
-(4, '주택 및 거주지'),
-(5, '기숙사'),
-(6, '전월세 및 주거급여 지원'),
-(7, '미래역량강화'),
-(8, '교육비지원'),
-(9, '온라인교육'),
-(10, '취약계층 및 금융지원'),
-(11, '건강'),
-(12, '예술인지원'),
-(13, '문화활동'),
-(14, '청년참여'),
-(15, '정책인프라구축'),
-(16, '청년국제교류'),
-(17, '권익보호');
+
+CREATE TABLE `policies` (
+  `policy_id` varchar(50) DEFAULT NULL,
+  `policy_name` text,
+  `policy_summary` text,
+  `source_url` text,
+  `min_age` int DEFAULT NULL,
+  `max_age` int DEFAULT NULL,
+  `income_min` int DEFAULT NULL,
+  `income_max` int DEFAULT NULL,
+  `biz_start_date` datetime DEFAULT NULL,
+  `biz_end_date` datetime DEFAULT NULL,
+  `aply_start_date` datetime DEFAULT NULL,
+  `aply_end_date` datetime DEFAULT NULL,
+  `marriage_status` varchar(10) DEFAULT NULL,
+  `application_status` varchar(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `policy_categories` (
+  `policy_id` varchar(50) DEFAULT NULL,
+  `category_name` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `policy_education_levels` (
+  `policy_id` varchar(50) DEFAULT NULL,
+  `education_level_code` varchar(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `policy_job_status` (
+  `policy_id` varchar(50) DEFAULT NULL,
+  `job_status_code` varchar(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `policy_keywords` (
+  `policy_id` varchar(50) DEFAULT NULL,
+  `keyword_name` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `policy_majors` (
+  `policy_id` varchar(50) DEFAULT NULL,
+  `major_code` varchar(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `policy_regions` (
+  `policy_id` varchar(50) DEFAULT NULL,
+  `region_code` varchar(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `policy_specializations` (
+  `policy_id` varchar(50) DEFAULT NULL,
+  `specialization_code` varchar(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `policy_subcategories` (
+  `policy_id` varchar(50) DEFAULT NULL,
+  `subcategory_name` text
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `region_codes` (
+  `code` varchar(10) NOT NULL,
+  `sido` varchar(100) NOT NULL,
+  `sigungu` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `specialization_codes` (
+  `code` varchar(10) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  PRIMARY KEY (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+
+
+
+
