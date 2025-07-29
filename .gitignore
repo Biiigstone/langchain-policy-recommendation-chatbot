@@ -86,3 +86,6 @@ instance/
 uploads/
 media/
 vectorDB/
+
+# 기타
+.~lock*
