@@ -145,7 +145,7 @@ def create_final_document(row, code_maps):
     else:
         parts.append("특별한 자격 조건 없이 지원 가능합니다.")
 
-    # --- 신청 방법 (현재 주석 처리됨) ---
+    # --- 신청 방법 ---
     # if pd.notna(row.get('plcyAplyMthdCn')) and str(row.get('plcyAplyMthdCn')).strip():
     #     parts.append(f"신청 방법은 {row['plcyAplyMthdCn'].strip()}입니다.")
 

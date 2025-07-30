@@ -36,7 +36,6 @@ def create_final_chain(openai_client, code_map):
     retrieval_chain = (
             RunnableLambda(lambda q: {"query": q})
             | RunnablePassthrough.assign(filters=lambda x: create_filter_from_query(openai_client, x["query"]))
-            # ✅ 아래 부분을 디버깅을 위해 수정합니다.
             | RunnablePassthrough.assign(
         candidate_ids=lambda x: (
             # get_rdb_candidate_ids 함수를 실행하고 결과를 ids 변수에 저장
@@ -89,5 +88,4 @@ def create_final_chain(openai_client, code_map):
         input_messages_key="question",
         history_messages_key="chat_history",
     )
-
     return final_chain_with_memory
