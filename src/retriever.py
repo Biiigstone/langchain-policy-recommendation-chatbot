@@ -1,7 +1,7 @@
-import os
+
 from langchain_openai import OpenAIEmbeddings
 from langchain_chroma import Chroma
-
+from config import COLLECTION_NAME, VDB_DIRECTORY
 
 def semantic_search(
         candidate_ids: list,
@@ -40,10 +40,9 @@ def semantic_search(
     # 2. 임베딩 모델 및 ChromaDB 로드
     embedding_model = OpenAIEmbeddings(model="text-embedding-3-large")
     vectorstore = Chroma(
-        collection_name="policy_collection_summary_added_openai_large",
-
+        collection_name=COLLECTION_NAME,
         embedding_function=embedding_model,
-        persist_directory=vdb_directory
+        persist_directory=VDB_DIRECTORY
     )
 
     # 3. 필터가 적용된 Retriever 생성

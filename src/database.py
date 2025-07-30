@@ -2,7 +2,10 @@
 
 import mysql.connector
 from mysql.connector import Error
+from config import DB_CONNECTION_INFO
 
+def get_db_connection():
+    return mysql.connector.connect(**DB_CONNECTION_INFO)
 
 def _get_all_related_region_codes(cursor, region_names: list) -> list:
     """
@@ -70,7 +73,7 @@ def get_rdb_candidate_ids(db_connection, filters: dict) -> list:
 
         # 쿼리 실행
         cursor.execute(final_query, params)
-        candidate_ids = [item[0] for item in cursor.fetchall()]
+        candidate_ids = [str(item[0]) for item in cursor.fetchall()]
         return candidate_ids
 
     except Error as e:

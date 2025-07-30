@@ -171,12 +171,24 @@ def setup_vectorstore(collection_name: str, embedding_model, persist_directory: 
     return vectorstore
 
 
+def add_to_chroma_in_batches(docs: list[Document], batch_size: int = 100):
+    """문서 리스트를 배치로 나누어 ChromaDB에 추가합니다."""
 
+    # 전체 문서 리스트를 batch_size만큼 건너뛰며 반복
+    for i in range(0, len(docs), batch_size):
+        # 현재 처리할 배치 슬라이싱
+        batch = docs[i:i + batch_size]
+
+        # 현재 배치만 DB에 추가
+        vectorstore.add_documents(documents=batch)
+
+        # 진행 상황 출력
+        print(f"Batch {i // batch_size + 1}/{(len(docs) - 1) // batch_size + 1} 처리 완료 ({len(batch)}개 문서 추가)")
 
 
 if __name__ == '__main__':
 
-    COLLECTION_NAME = "policy_collection_augmented_summary_added_openai_large"
+    COLLECTION_NAME = "policy_collection_summary_added_openai_large_0730"
     VECTOR_DB_PATH = '../vectorDB/chroma_db_policy'
     CSV_PATH = '../data/policies_with_documents_final2.csv'
 
@@ -198,9 +210,10 @@ if __name__ == '__main__':
         if token_count >= 1000:
             print(f'토큰 수 1000 이상! 토큰 수 : {token_count}')
 
-        print(f'총 토큰 수 : {avg}')
+    print(f'총 토큰 수 : {avg}')
 
     try:
-        vectorstore.add_documents(docs)
+        add_to_chroma_in_batches(docs, 200)
     except Exception as e:
         print('문서 임베딩 중 오류 발생!')
+        print(e)
