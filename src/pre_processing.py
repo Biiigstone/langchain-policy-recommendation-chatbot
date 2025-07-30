@@ -4,6 +4,36 @@
 이 스크립트는 원본 데이터를 로드하여,
 시멘틱 서칭에 유의미한 컬럼을 추출하고 자연어로 변환한 'document' 열을 생성한 후
 결과를 CSV 파일로 저장하는 스크립트 입니다.
+
+--- 사용한 컬럼 ---
+plcyNm - 정책명
+lclsfNm - 대분류명 (정책 분야)
+mclsfNm - 중분류명 (정책 분야)
+plcySprtCn - 정책 지원 내용
+rgtrUpInstCdNm - 주관 기관명
+plcyExplnCn - 정책 설명 내용
+plcyKywdNm - 정책 키워드명
+
+자격 조건 관련 컬럼:
+
+sprtTrgtMinAge - 지원 대상 최소 나이
+sprtTrgtMaxAge - 지원 대상 최대 나이
+mrgSttsCd - 혼인 상태
+jobCd - 취업 상태
+schoolCd - 학력
+plcyMajorCd - 정책 전공
+addAplyQlfcCndCn - 추가 신청 자격 조건 내용
+
+검색 정확도 및 임베딩 품딜을 위해 각 조건의 독립성을 보장하고, 제한이 없는 경우 제한이 없음을 명시하였음.
+
+변환 예시 :
+	document
+8	정책명은 '청년 체인지 메이커 아카데미 운영'입니다.
+주관 기관은 제주특별자치도입니다.
+정책 분야는 '교육 > 미래역량강화'이며, '청년들을 대상으로 취,창업 역량강화 프로그램 및 문화예술 강연 등 다양한 주제로 편성한 정기적 강연 프로그램 운영'을 지원합니다.
+상세 설명: 생애전환기 진로 설계 등으로 고민하는 청년에게 전문가 및 명사의 강연 참여기회 제공 주요 키워드는 교육지원입니다.
+지원 요건 : 연령 제한 없이 지원 가능합니다., 혼인 상태와 관계없이 지원 가능합니다., 취업 상태와 관계없이 지원 가능합니다., 학력과 관계없이 지원 가능합니다., 전공과 관계없이 지원 가능합니다..
+
 """
 
 import pandas as pd
@@ -111,7 +141,7 @@ def create_final_document(row, code_maps):
 
     # 최종 조건 문장 조합
     if conditions:
-        parts.append("지원 대상은 " + ", ".join(filter(None, conditions)) + "입니다.")
+        parts.append("지원 요건: " + ", ".join(filter(None, conditions)) + ".")
     else:
         parts.append("특별한 자격 조건 없이 지원 가능합니다.")
 
@@ -119,12 +149,13 @@ def create_final_document(row, code_maps):
     # if pd.notna(row.get('plcyAplyMthdCn')) and str(row.get('plcyAplyMthdCn')).strip():
     #     parts.append(f"신청 방법은 {row['plcyAplyMthdCn'].strip()}입니다.")
 
-    return " ".join(parts)"
+    return " ".join(parts)
+
 
 if __name__ == '__main__':
     POLICY_CSV_PATH = '../data/policy_data.csv'
     CODE_EXCEL_PATH = '../data/code_table.xlsx'
-    OUTPUT_CSV_PATH = '../data/policies_with_documents_final.csv'
+    OUTPUT_CSV_PATH = '../data/policies_with_documents_final2.csv'
 
     try:
         df_raw = pd.read_csv(POLICY_CSV_PATH, encoding='utf-8')
@@ -133,7 +164,7 @@ if __name__ == '__main__':
         print(f"������ 오류: '{POLICY_CSV_PATH}' 파일을 찾을 수 없습니다.")
         exit()
 
-    df_raw['sprtTrgtMinAge'] = pd.to_numeric(zdf_raw['sprtTrgtMinAge'], errors='coerce')
+    df_raw['sprtTrgtMinAge'] = pd.to_numeric(df_raw['sprtTrgtMinAge'], errors='coerce')
     df_raw['sprtTrgtMaxAge'] = pd.to_numeric(df_raw['sprtTrgtMaxAge'], errors='coerce')
 
     code_maps = load_maps_from_excel(CODE_EXCEL_PATH)
