@@ -5,6 +5,7 @@
 import json
 from openai import OpenAI
 import pandas as pd
+from utils import count_tokens
 
 
 def create_filter_from_query(client: OpenAI, user_query: str) -> dict:
@@ -319,4 +320,5 @@ def format_docs(docs: list, code_map: dict) -> str:
         print(f"Doc {i + 1}: {doc.metadata.get('plcyNm', 'Unknown')} (ID: {doc.metadata.get('plcyNo', 'Unknown')})")
     print("----------------------------\n")
     print(result)  # 최종 포맷팅된 context 출력
+    print(count_tokens(result))
     return result

@@ -13,15 +13,20 @@ from database import get_db_connection, get_rdb_candidate_ids
 from llm_utils import create_filter_from_query, format_docs
 from retriever import semantic_search
 from memory import get_session_history
-from prompts import TEMPLATE_WITH_HISTORY
+from prompts import TEMPLATE_WITH_HISTORY, TEMPLATE_WITH_HISTORY_FOR_R
 
 
 def create_final_chain(openai_client, code_map):
     """
     RAG 애플리케이션의 모든 체인을 조립하고 최종 실행 가능한 체인을 반환합니다.
     """
+    # 0. 모델, 파서, 포맷터 정의
+    model = ChatOpenAI(model=OPENAI_MODEL, temperature=OPENAI_TEMPERATURE)
+    output_parser = StrOutputParser()
+    formatted_docs_func = partial(format_docs, code_map=code_map)
+
     # 1. Retrieval 체인 정의
-    # retrieval_chain = (
+    # base_retrieval_chain = (
     #         RunnableLambda(lambda q: {"query": q})
     #         | RunnablePassthrough.assign(filters=lambda x: create_filter_from_query(openai_client, x["query"]))
     #         | RunnablePassthrough.assign(
@@ -33,7 +38,14 @@ def create_final_chain(openai_client, code_map):
     #     vdb_directory=VDB_DIRECTORY
     # ))
     # )
-    retrieval_chain = (
+
+    rephrase_question_chain = (
+        TEMPLATE_WITH_HISTORY_FOR_R
+        | model
+        | output_parser
+    )
+
+    base_retrieval_chain = (
             RunnableLambda(lambda q: {"query": q})
             | RunnablePassthrough.assign(filters=lambda x: create_filter_from_query(openai_client, x["query"]))
             | RunnablePassthrough.assign(
@@ -61,15 +73,12 @@ def create_final_chain(openai_client, code_map):
     ))
     )
 
-    # 2. 모델, 파서, 포맷터 정의
-    model = ChatOpenAI(model=OPENAI_MODEL, temperature=OPENAI_TEMPERATURE)
-    output_parser = StrOutputParser()
-    formatted_docs_func = partial(format_docs, code_map=code_map)
+    conversational_retrieval_chain = rephrase_question_chain | base_retrieval_chain
 
-    # 3. 핵심 RAG 체인 조립
+    # 2. 핵심 RAG 체인 조립
     rag_core_chain = (
             {
-                "documents": lambda x: retrieval_chain.invoke(x["question"]),
+                "documents": conversational_retrieval_chain,
                 "question": lambda x: x["question"],
                 "chat_history": lambda x: x["chat_history"],
             }
@@ -81,7 +90,7 @@ def create_final_chain(openai_client, code_map):
             | output_parser
     )
 
-    # 4. 메모리 기능을 포함한 최종 체인 반환
+    # 3. 메모리 기능을 포함한 최종 체인 반환
     final_chain_with_memory = RunnableWithMessageHistory(
         rag_core_chain,
         get_session_history,
